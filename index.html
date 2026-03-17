@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OceanCode AI — Intelligent Solutions for Tomorrow</title>
+  <meta name="description" content="OceanCode AI delivers cutting-edge artificial intelligence solutions in computer vision, NLP, deep learning, and neural networks for enterprises worldwide." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --ink:       #040d1a;
+      --deep:      #071428;
+      --navy:      #0a1f3d;
+      --mid:       #0d2b52;
+      --steel:     #14305a;
+      --cyan:      #00d4ff;
+      --cyan-dim:  #00a8cc;
+      --teal:      #00f5c3;
+      --white:     #e8f4ff;
+      --muted:     #6b8ab0;
+      --border:    rgba(0, 212, 255, 0.12);
+      --glow:      0 0 40px rgba(0, 212, 255, 0.18);
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Custom cursor ── */
+    .cursor { position: fixed; pointer-events: none; z-index: 9999; mix-blend-mode: screen; }
+    .cursor-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--cyan);
+      transform: translate(-50%,-50%);
+      transition: transform .1s ease;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid rgba(0,212,255,.5);
+      transform: translate(-50%,-50%);
+      transition: transform .18s ease, width .2s ease, height .2s ease, border-color .2s;
+    }
+    body:hover .cursor-ring { opacity: 1; }
+    a:hover ~ .cursor .cursor-ring, button:hover ~ .cursor .cursor-ring { width: 52px; height: 52px; }
+
+    /* ── Canvas ── */
+    #hero-canvas {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: var(--cyan-dim); border-radius: 2px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 5vw;
+      transition: background .4s, backdrop-filter .4s, border-bottom .4s;
+    }
+    nav.scrolled {
+      background: rgba(4, 13, 26, 0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: .7rem;
+      font-family: var(--font-head); font-size: 1.25rem; font-weight: 800;
+      color: var(--white); text-decoration: none; letter-spacing: -.01em;
+    }
+    .nav-logo-mark {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--teal) 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 800; color: var(--ink); flex-shrink: 0;
+    }
+    .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: .88rem;
+      font-weight: 400; letter-spacing: .04em; text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-cta {
+      background: transparent; border: 1px solid var(--cyan);
+      color: var(--cyan); padding: .55rem 1.4rem; border-radius: 4px;
+      font-family: var(--font-body); font-size: .85rem; font-weight: 500;
+      cursor: pointer; letter-spacing: .04em; text-transform: uppercase;
+      transition: background .2s, color .2s, box-shadow .2s;
+    }
+    .nav-cta:hover { background: var(--cyan); color: var(--ink); box-shadow: var(--glow); }
+
+    /* ── Hamburger ── */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--cyan); border-radius: 2px; transition: .3s; }
+    .mobile-menu {
+      display: none; position: fixed; inset: 0; z-index: 99;
+      background: rgba(4,13,26,.97); backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center; gap: 2rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: var(--white); text-decoration: none; font-family: var(--font-head);
+      font-size: 2rem; font-weight: 700; transition: color .2s;
+    }
+    .mobile-menu a:hover { color: var(--cyan); }
+    .mobile-close { position: absolute; top: 1.6rem; right: 5vw; font-size: 2rem; color: var(--muted); cursor: pointer; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 12rem 5vw 8rem; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(0,212,255,.07) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 40% at 80% 80%, rgba(0,245,195,.04) 0%, transparent 60%),
+                  linear-gradient(180deg, var(--ink) 0%, var(--deep) 100%);
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .5rem;
+      border: 1px solid var(--border); border-radius: 100px;
+      padding: .3rem 1rem; font-size: .78rem; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--cyan); margin-bottom: 1.6rem;
+      backdrop-filter: blur(8px); background: rgba(0,212,255,.04);
+      width: fit-content;
+      animation: fadeUp .8s ease both;
+    }
+    .hero-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    .hero-title {
+      font-family: var(--font-head); font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 800; line-height: 1.0; letter-spacing: -.03em;
+      max-width: 14ch; position: relative; z-index: 1;
+      animation: fadeUp .8s .15s ease both;
+    }
+    .hero-title em { font-style: normal; color: var(--cyan); }
+    .hero-title .line-teal { color: var(--teal); }
+    .hero-sub {
+      margin-top: 1.8rem; max-width: 50ch; font-size: 1.1rem;
+      color: var(--muted); font-weight: 300; line-height: 1.8;
+      position: relative; z-index: 1;
+      animation: fadeUp .8s .3s ease both;
+    }
+    .hero-actions {
+      margin-top: 2.8rem; display: flex; gap: 1.2rem; flex-wrap: wrap;
+      position: relative; z-index: 1;
+      animation: fadeUp .8s .45s ease both;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: var(--cyan); color: var(--ink); font-weight: 600;
+      padding: .85rem 2rem; border-radius: 6px; text-decoration: none;
+      font-size: .95rem; border: none; cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 0 30px rgba(0,212,255,.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,212,255,.45); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: transparent; color: var(--white); font-weight: 400;
+      padding: .85rem 2rem; border-radius: 6px; text-decoration: none;
+      font-size: .95rem; border: 1px solid rgba(232,244,255,.15); cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+    .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .hero-stats {
+      position: relative; z-index: 1; margin-top: 5rem;
+      display: flex; gap: 4rem; flex-wrap: wrap;
+      animation: fadeUp .8s .6s ease both;
+    }
+    .stat-item .stat-num {
+      font-family: var(--font-head); font-size: 2.4rem; font-weight: 800;
+      color: var(--cyan); line-height: 1;
+    }
+    .stat-item .stat-label { font-size: .82rem; color: var(--muted); margin-top: .3rem; letter-spacing: .06em; text-transform: uppercase; }
+
+    .hero-scroll-hint {
+      position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      color: var(--muted); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
+      animation: fadeUp 1s .8s ease both;
+    }
+    .scroll-line { width: 1px; height: 50px; background: linear-gradient(var(--cyan), transparent); animation: scrollLine 1.8s infinite; }
+    @keyframes scrollLine { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── SECTION COMMONS ── */
+    section { position: relative; padding: 7rem 5vw; }
+    .section-tag {
+      font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--cyan); font-weight: 500; margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: var(--font-head); font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800; line-height: 1.1; letter-spacing: -.02em;
+    }
+    .section-sub {
+      color: var(--muted); max-width: 55ch; line-height: 1.8;
+      font-size: 1rem; margin-top: .8rem;
+    }
+
+    /* ── ABOUT / MARQUEE ── */
+    .marquee-section {
+      padding: 2.5rem 0; overflow: hidden;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: rgba(0,212,255,.02);
+    }
+    .marquee-track { display: flex; gap: 0; animation: marquee 30s linear infinite; white-space: nowrap; }
+    .marquee-item {
+      display: inline-flex; align-items: center; gap: 1rem;
+      padding: 0 2.5rem; font-family: var(--font-head); font-size: .9rem;
+      font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--steel);
+    }
+    .marquee-item .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--cyan); opacity: .6; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ── SERVICES ── */
+    .services-section { background: var(--deep); }
+    .services-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 2rem; margin-bottom: 4rem; }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .service-card {
+      background: var(--deep); padding: 2.5rem;
+      transition: background .3s;
+      position: relative; overflow: hidden;
+    }
+    .service-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,212,255,.06) 0%, transparent 60%);
+      opacity: 0; transition: opacity .3s;
+    }
+    .service-card:hover { background: var(--navy); }
+    .service-card:hover::before { opacity: 1; }
+    .service-icon {
+      width: 52px; height: 52px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1.6rem;
+      border: 1px solid var(--border);
+    }
+    .service-icon.cv  { background: rgba(0,212,255,.08); }
+    .service-icon.nlp { background: rgba(0,245,195,.08); }
+    .service-icon.dl  { background: rgba(99,102,241,.08); }
+    .service-icon.nn  { background: rgba(245,158,11,.08); }
+    .service-card h3 { font-family: var(--font-head); font-size: 1.15rem; font-weight: 700; margin-bottom: .7rem; }
+    .service-card p { color: var(--muted); font-size: .92rem; line-height: 1.7; }
+    .service-card .tag-list { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; }
+    .stag {
+      font-size: .72rem; padding: .25rem .7rem; border-radius: 100px;
+      border: 1px solid var(--border); color: var(--muted); letter-spacing: .04em;
+      background: rgba(255,255,255,.02);
+    }
+
+    /* ── PROJECTS ── */
+    .projects-section { background: var(--ink); }
+    .projects-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
+    .project-card {
+      background: var(--navy); border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden; position: relative;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+    }
+    .project-card:hover { transform: translateY(-4px); border-color: rgba(0,212,255,.3); box-shadow: var(--glow); }
+    .project-card.large { grid-column: span 7; }
+    .project-card.small { grid-column: span 5; }
+    .project-card.full  { grid-column: span 12; display: grid; grid-template-columns: 1fr 1fr; }
+    .project-visual {
+      height: 220px; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .project-card.full .project-visual { height: auto; min-height: 260px; }
+    .project-body { padding: 2rem; }
+    .project-card.full .project-body { padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; }
+    .project-label { font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--cyan); margin-bottom: .8rem; }
+    .project-card h3 { font-family: var(--font-head); font-size: 1.2rem; font-weight: 700; margin-bottom: .7rem; }
+    .project-card p { color: var(--muted); font-size: .9rem; line-height: 1.7; }
+    .project-card .arrow {
+      display: inline-flex; align-items: center; gap: .4rem;
+      margin-top: 1.2rem; font-size: .85rem; color: var(--cyan);
+      font-weight: 500; text-decoration: none;
+    }
+    .project-card .arrow:hover { gap: .7rem; }
+
+    /* SVG project visuals */
+    .vis-chatbot { background: linear-gradient(135deg, #071428 0%, #0d2b52 100%); }
+    .vis-vehicle { background: linear-gradient(135deg, #040d1a 0%, #0a1f3d 100%); }
+    .vis-face    { background: linear-gradient(135deg, #071428 0%, #071428 100%); }
+    .vis-assist  { background: linear-gradient(135deg, #040d1a 0%, #0a1f3d 100%); }
+
+    /* ── WHY US ── */
+    .why-section { background: var(--deep); }
+    .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .why-visual {
+      position: relative; aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .why-orb {
+      width: 340px; height: 340px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(0,212,255,.15) 0%, rgba(0,245,195,.05) 50%, transparent 70%);
+      border: 1px solid rgba(0,212,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      animation: orbPulse 6s ease-in-out infinite;
+    }
+    @keyframes orbPulse { 0%,100% { box-shadow: 0 0 60px rgba(0,212,255,.08); } 50% { box-shadow: 0 0 100px rgba(0,212,255,.16); } }
+    .why-orb-inner {
+      width: 220px; height: 220px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, rgba(0,212,255,.25) 0%, rgba(0,245,195,.1) 60%, transparent 80%);
+      border: 1px solid rgba(0,245,195,.15);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .why-orb-core {
+      width: 110px; height: 110px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--teal) 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+      box-shadow: 0 0 40px rgba(0,212,255,.5);
+    }
+    .orbit-ring {
+      position: absolute; border-radius: 50%; border: 1px dashed;
+      animation: orbit linear infinite;
+    }
+    .orbit-ring:nth-child(1) { width: 380px; height: 380px; border-color: rgba(0,212,255,.07); animation-duration: 20s; }
+    .orbit-ring:nth-child(2) { width: 430px; height: 430px; border-color: rgba(0,245,195,.05); animation-duration: 30s; animation-direction: reverse; }
+    .orbit-dot {
+      position: absolute; width: 7px; height: 7px; border-radius: 50%;
+      top: -3.5px; left: 50%; transform: translateX(-50%);
+    }
+    .orbit-ring:nth-child(1) .orbit-dot { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+    .orbit-ring:nth-child(2) .orbit-dot { background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+    @keyframes orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .why-list { list-style: none; display: flex; flex-direction: column; gap: 1.4rem; margin-top: 2.5rem; }
+    .why-item {
+      display: flex; gap: 1.2rem; align-items: flex-start;
+      padding: 1.4rem; border-radius: 10px; border: 1px solid transparent;
+      transition: border-color .3s, background .3s;
+    }
+    .why-item:hover { border-color: var(--border); background: rgba(0,212,255,.03); }
+    .why-icon {
+      width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+      background: rgba(0,212,255,.08); border: 1px solid var(--border);
+    }
+    .why-item h4 { font-family: var(--font-head); font-weight: 700; font-size: .95rem; margin-bottom: .3rem; }
+    .why-item p  { font-size: .88rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── PROCESS ── */
+    .process-section { background: var(--ink); }
+    .process-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 0; margin-top: 4rem; position: relative; }
+    .process-steps::before {
+      content: ''; position: absolute; top: 2.2rem; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--cyan) 20%, var(--teal) 50%, var(--cyan) 80%, transparent 100%);
+      opacity: .2;
+    }
+    .process-step { padding: 0 2rem 0 0; position: relative; }
+    .step-num {
+      font-family: var(--font-head); font-size: .75rem; font-weight: 800;
+      color: var(--cyan); letter-spacing: .1em; margin-bottom: 1.2rem;
+    }
+    .step-dot {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid var(--border); background: var(--navy);
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+      margin-bottom: 1.4rem; position: relative; z-index: 1;
+    }
+    .process-step h3 { font-family: var(--font-head); font-size: 1rem; font-weight: 700; margin-bottom: .6rem; }
+    .process-step p  { color: var(--muted); font-size: .87rem; line-height: 1.6; }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: var(--deep); text-align: center;
+      overflow: hidden; position: relative;
+    }
+    .cta-section::before {
+      content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,212,255,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-section .section-title { font-size: clamp(2.2rem, 5vw, 4rem); max-width: 18ch; margin: 0 auto 1.4rem; }
+    .cta-section .section-sub   { margin: 0 auto 2.8rem; }
+    .cta-actions { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── CONTACT ── */
+    .contact-section { background: var(--ink); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: start; }
+    .contact-info h2 { font-family: var(--font-head); font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem; }
+    .contact-info p  { color: var(--muted); line-height: 1.8; margin-bottom: 2rem; }
+    .contact-detail { display: flex; align-items: center; gap: .9rem; margin-bottom: 1.2rem; }
+    .contact-detail-icon {
+      width: 38px; height: 38px; border-radius: 8px;
+      background: rgba(0,212,255,.08); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: .95rem; flex-shrink: 0;
+    }
+    .contact-detail span { font-size: .9rem; color: var(--muted); }
+    .contact-detail strong { display: block; font-size: .95rem; font-weight: 500; color: var(--white); }
+    .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .form-group { display: flex; flex-direction: column; gap: .4rem; }
+    .form-group label { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .form-group input, .form-group select, .form-group textarea {
+      background: var(--navy); border: 1px solid var(--border); border-radius: 8px;
+      padding: .85rem 1.1rem; color: var(--white); font-family: var(--font-body);
+      font-size: .95rem; font-weight: 300; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,212,255,.08);
+    }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .form-group select option { background: var(--navy); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: var(--muted); opacity: .6; }
+    .btn-submit {
+      background: var(--cyan); color: var(--ink); font-weight: 700;
+      padding: .9rem 2rem; border-radius: 8px; border: none; cursor: pointer;
+      font-family: var(--font-body); font-size: 1rem;
+      transition: box-shadow .2s, transform .2s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+    .btn-submit:hover { box-shadow: 0 0 40px rgba(0,212,255,.4); transform: translateY(-2px); }
+    .form-success {
+      display: none; text-align: center; padding: 2.5rem;
+      border: 1px solid rgba(0,245,195,.2); border-radius: 12px;
+      background: rgba(0,245,195,.04); color: var(--teal);
+    }
+    .form-success h3 { font-family: var(--font-head); font-size: 1.3rem; margin-bottom: .5rem; }
+    .form-success p  { color: var(--muted); font-size: .9rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink); border-top: 1px solid var(--border);
+      padding: 3.5rem 5vw 2rem;
+    }
+    .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+    .footer-brand p { color: var(--muted); font-size: .88rem; line-height: 1.7; margin-top: .8rem; max-width: 30ch; }
+    .footer-col h4 { font-family: var(--font-head); font-size: .85rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1.2rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .7rem; }
+    .footer-col ul a { color: var(--muted); text-decoration: none; font-size: .88rem; transition: color .2s; }
+    .footer-col ul a:hover { color: var(--cyan); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 1rem; }
+    .footer-bottom p { color: var(--muted); font-size: .82rem; }
+    .socials { display: flex; gap: .8rem; }
+    .social-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+      color: var(--muted); text-decoration: none; font-size: .9rem;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .social-btn:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,.06); }
+
+    /* ── OUR WORK VIDEO SECTION ── */
+    .ourwork-section { background: var(--deep); }
+    .ourwork-header { margin-bottom: 3.5rem; }
+
+    .video-filter-bar {
+      display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 2rem;
+    }
+    .vf-btn {
+      padding: .38rem 1.1rem; border-radius: 100px; font-size: .8rem;
+      font-family: var(--font-body); font-weight: 500; letter-spacing: .04em;
+      cursor: pointer; transition: background .2s, color .2s, border-color .2s;
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+    }
+    .vf-btn.active, .vf-btn:hover {
+      background: var(--cyan); color: var(--ink); border-color: var(--cyan);
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.6rem;
+    }
+    .video-card {
+      background: var(--navy); border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden; transition: transform .3s, border-color .3s, box-shadow .3s;
+      display: flex; flex-direction: column;
+    }
+    .video-card:hover {
+      transform: translateY(-4px); border-color: rgba(0,212,255,.35);
+      box-shadow: var(--glow);
+    }
+    .video-card.hidden { display: none; }
+
+    .video-wrapper {
+      position: relative; width: 100%; padding-bottom: 56.25%; /* 16:9 */
+      background: var(--ink);
+    }
+    .video-wrapper iframe {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      border: none; display: block;
+    }
+    /* Lazy load placeholder */
+    .video-wrapper .vid-placeholder {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: .8rem; cursor: pointer;
+      background: var(--ink);
+      transition: opacity .3s;
+    }
+    .vid-placeholder img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; opacity: .55;
+    }
+    .vid-play-btn {
+      position: relative; z-index: 2;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: rgba(0,212,255,.15); border: 2px solid var(--cyan);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, transform .2s;
+      backdrop-filter: blur(6px);
+    }
+    .vid-placeholder:hover .vid-play-btn { background: var(--cyan); transform: scale(1.08); }
+    .vid-play-btn svg { margin-left: 4px; }
+    .vid-placeholder.loaded { opacity: 0; pointer-events: none; }
+
+    .video-meta { padding: 1.3rem 1.4rem 1.5rem; flex: 1; display: flex; flex-direction: column; gap: .5rem; }
+    .video-meta .vcategory {
+      font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--cyan); font-weight: 500;
+    }
+    .video-meta h3 { font-family: var(--font-head); font-size: 1rem; font-weight: 700; line-height: 1.3; }
+    .video-meta p  { color: var(--muted); font-size: .85rem; line-height: 1.6; flex: 1; }
+    .video-yt-link {
+      display: inline-flex; align-items: center; gap: .4rem;
+      margin-top: .6rem; font-size: .8rem; color: var(--muted);
+      text-decoration: none; transition: color .2s; width: fit-content;
+    }
+    .video-yt-link:hover { color: var(--cyan); }
+
+    .ourwork-note {
+      margin-top: 2.5rem; text-align: center;
+      font-size: .88rem; color: var(--muted);
+    }
+    .ourwork-note a { color: var(--cyan); text-decoration: none; }
+    .ourwork-note a:hover { text-decoration: underline; }
+
+    /* ── Reveal animations ── */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .why-grid { grid-template-columns: 1fr; }
+      .why-visual { display: none; }
+      .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .project-card.large, .project-card.small { grid-column: span 12; }
+      .project-card.full { grid-column: span 12; grid-template-columns: 1fr; }
+      .project-card.full .project-visual { min-height: 200px; }
+    }
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .hero-stats { gap: 2rem; }
+      .process-steps { grid-template-columns: 1fr 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .services-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor cursor-dot" id="cursor-dot"></div>
+<div class="cursor cursor-ring" id="cursor-ring"></div>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <span class="mobile-close" id="mobile-close">✕</span>
+  <a href="#services" onclick="closeMobile()">Services</a>
+  <a href="#projects" onclick="closeMobile()">Projects</a>
+  <a href="#ourwork" onclick="closeMobile()">Our Work</a>
+  <a href="#why" onclick="closeMobile()">Why Us</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">OC</div>
+    OceanCode AI
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#ourwork">Our Work</a></li>
+    <li><a href="#why">Why Us</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Start a Project</button>
+  <div class="hamburger" id="hamburger" onclick="openMobile()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <canvas id="hero-canvas"></canvas>
+
+  <div class="hero-tag"><span class="hero-tag-dot"></span> AI Solutions for the Commercial Sector</div>
+  <h1 class="hero-title">
+    Intelligent Systems.<br>
+    <em>Built</em> for the<br>
+    <span class="line-teal">Real World.</span>
+  </h1>
+  <p class="hero-sub">OceanCode AI delivers precision-engineered artificial intelligence — from autonomous vision systems to conversational agents — that transforms how enterprises operate and compete globally.</p>
+  <div class="hero-actions">
+    <a href="#services" class="btn-primary">Explore Our Solutions <span>→</span></a>
+    <a href="#projects" class="btn-ghost">View Projects <span>↗</span></a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num" data-count="50">0</div>
+      <div class="stat-label">Projects Delivered</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" data-count="30">0</div>
+      <div class="stat-label">Global Clients</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" data-count="99">0</div>
+      <div class="stat-label">% Client Satisfaction</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" data-count="4">0</div>
+      <div class="stat-label">Core AI Disciplines</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marquee">
+    <span class="marquee-item"><span class="dot"></span>Computer Vision</span>
+    <span class="marquee-item"><span class="dot"></span>Natural Language Processing</span>
+    <span class="marquee-item"><span class="dot"></span>Deep Learning</span>
+    <span class="marquee-item"><span class="dot"></span>Neural Networks</span>
+    <span class="marquee-item"><span class="dot"></span>Autonomous Systems</span>
+    <span class="marquee-item"><span class="dot"></span>Facial Recognition</span>
+    <span class="marquee-item"><span class="dot"></span>AI Chatbots</span>
+    <span class="marquee-item"><span class="dot"></span>AI Assistants</span>
+    <span class="marquee-item"><span class="dot"></span>Object Detection</span>
+    <span class="marquee-item"><span class="dot"></span>Computer Vision</span>
+    <span class="marquee-item"><span class="dot"></span>Natural Language Processing</span>
+    <span class="marquee-item"><span class="dot"></span>Deep Learning</span>
+    <span class="marquee-item"><span class="dot"></span>Neural Networks</span>
+    <span class="marquee-item"><span class="dot"></span>Autonomous Systems</span>
+    <span class="marquee-item"><span class="dot"></span>Facial Recognition</span>
+    <span class="marquee-item"><span class="dot"></span>AI Chatbots</span>
+    <span class="marquee-item"><span class="dot"></span>AI Assistants</span>
+    <span class="marquee-item"><span class="dot"></span>Object Detection</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="services-section" id="services">
+  <div class="services-header">
+    <div>
+      <div class="section-tag reveal">Core Disciplines</div>
+      <h2 class="section-title reveal reveal-delay-1">What We<br>Specialize In</h2>
+    </div>
+    <p class="section-sub reveal reveal-delay-2">Four pillars of AI expertise, applied to deliver measurable, real-world outcomes for enterprises across every industry.</p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-icon cv">👁️</div>
+      <h3>Computer Vision</h3>
+      <p>We engineer visual perception systems that enable machines to interpret and act on visual data — from real-time detection pipelines to large-scale image analysis infrastructure.</p>
+      <div class="tag-list">
+        <span class="stag">Object Detection</span>
+        <span class="stag">Semantic Segmentation</span>
+        <span class="stag">OCR</span>
+        <span class="stag">Pose Estimation</span>
+        <span class="stag">Video Analytics</span>
+      </div>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-icon nlp">💬</div>
+      <h3>Natural Language Processing</h3>
+      <p>From intent classification to multilingual document intelligence, our NLP systems allow your products to understand, generate, and act on human language at scale.</p>
+      <div class="tag-list">
+        <span class="stag">Sentiment Analysis</span>
+        <span class="stag">Entity Extraction</span>
+        <span class="stag">Text Summarization</span>
+        <span class="stag">Machine Translation</span>
+        <span class="stag">RAG Systems</span>
+      </div>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-icon dl">⚡</div>
+      <h3>Deep Learning</h3>
+      <p>We design, train, and deploy custom deep learning architectures optimized for your data and performance constraints — from edge deployment to cloud-scale inference.</p>
+      <div class="tag-list">
+        <span class="stag">CNN / Transformer</span>
+        <span class="stag">Transfer Learning</span>
+        <span class="stag">Model Optimization</span>
+        <span class="stag">Edge AI</span>
+        <span class="stag">MLOps</span>
+      </div>
+    </div>
+    <div class="service-card reveal reveal-delay-3">
+      <div class="service-icon nn">🧠</div>
+      <h3>Artificial Neural Networks</h3>
+      <p>Custom neural architectures for regression, classification, generative modeling, and beyond — tailored to the unique complexity and domain of your specific problem.</p>
+      <div class="tag-list">
+        <span class="stag">Feedforward / RNN</span>
+        <span class="stag">GANs</span>
+        <span class="stag">Autoencoders</span>
+        <span class="stag">Graph NN</span>
+        <span class="stag">Reinforcement Learning</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects-section" id="projects">
+  <div class="section-tag reveal">What We Build</div>
+  <h2 class="section-title reveal reveal-delay-1">Featured<br>Project Types</h2>
+  <p class="section-sub reveal reveal-delay-2">A sample of the AI solutions we deliver to clients across commercial, industrial, and enterprise sectors worldwide.</p>
+
+  <div class="projects-grid">
+    <!-- Chatbot -->
+    <div class="project-card large reveal reveal-delay-1">
+      <div class="project-visual vis-chatbot">
+        <svg width="100%" height="100%" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.8"/>
+              <stop offset="100%" style="stop-color:#00f5c3;stop-opacity:0.6"/>
+            </linearGradient>
+          </defs>
+          <rect x="60" y="30" width="220" height="55" rx="18" fill="none" stroke="#00d4ff" stroke-width="1" stroke-opacity=".3"/>
+          <rect x="60" y="30" width="220" height="55" rx="18" fill="rgba(0,212,255,0.05)"/>
+          <text x="82" y="62" font-family="DM Sans,sans-serif" font-size="11" fill="#e8f4ff" opacity=".8">How can I assist you today?</text>
+          <rect x="110" y="105" width="190" height="45" rx="14" fill="rgba(0,245,195,0.07)" stroke="#00f5c3" stroke-width=".8" stroke-opacity=".3"/>
+          <text x="128" y="132" font-family="DM Sans,sans-serif" font-size="10" fill="#00f5c3" opacity=".8">Analyze our Q3 sales report...</text>
+          <circle cx="82" cy="128" r="14" fill="rgba(0,245,195,0.12)" stroke="#00f5c3" stroke-width=".8" stroke-opacity=".4"/>
+          <text x="78" y="133" font-size="11" fill="#00f5c3">🤖</text>
+          <rect x="60" y="165" width="250" height="35" rx="12" fill="rgba(0,212,255,0.04)" stroke="#00d4ff" stroke-width=".6" stroke-opacity=".2"/>
+          <circle cx="295" cy="182" r="12" fill="rgba(0,212,255,0.15)"/>
+          <text x="289" y="187" font-size="12" fill="#00d4ff">↑</text>
+          <circle cx="30" cy="57" r="18" fill="rgba(0,212,255,0.1)" stroke="#00d4ff" stroke-width=".8" stroke-opacity=".4"/>
+          <text x="22" y="63" font-size="14">🤖</text>
+          <line x1="48" y1="57" x2="60" y2="57" stroke="#00d4ff" stroke-width=".6" stroke-opacity=".4"/>
+          <!-- animated dot -->
+          <circle class="chat-dot" cx="170" cy="182" r="2.5" fill="#00d4ff" opacity=".6"><animate attributeName="opacity" values=".6;.2;.6" dur="1.4s" repeatCount="indefinite"/></circle>
+          <circle class="chat-dot" cx="180" cy="182" r="2.5" fill="#00d4ff" opacity=".6"><animate attributeName="opacity" values=".6;.2;.6" dur="1.4s" begin=".2s" repeatCount="indefinite"/></circle>
+          <circle class="chat-dot" cx="190" cy="182" r="2.5" fill="#00d4ff" opacity=".6"><animate attributeName="opacity" values=".6;.2;.6" dur="1.4s" begin=".4s" repeatCount="indefinite"/></circle>
+        </svg>
+      </div>
+      <div class="project-body">
+        <div class="project-label">NLP · Generative AI</div>
+        <h3>Custom AI Chatbot Development</h3>
+        <p>Domain-specific conversational agents with retrieval-augmented generation, tool use, and multi-turn memory — trained on your business knowledge and integrated into your existing stack.</p>
+        <a href="#contact" class="arrow">Discuss Your Chatbot →</a>
+      </div>
+    </div>
+
+    <!-- Autonomous Vehicle -->
+    <div class="project-card small reveal reveal-delay-2">
+      <div class="project-visual vis-vehicle">
+        <svg width="100%" height="100%" viewBox="0 0 280 220">
+          <defs>
+            <radialGradient id="radar" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.15"/>
+              <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="140" cy="110" r="90" fill="url(#radar)" stroke="#00d4ff" stroke-width=".5" stroke-opacity=".2"/>
+          <circle cx="140" cy="110" r="60" fill="none" stroke="#00d4ff" stroke-width=".5" stroke-opacity=".15"/>
+          <circle cx="140" cy="110" r="30" fill="none" stroke="#00d4ff" stroke-width=".5" stroke-opacity=".1"/>
+          <!-- Radar sweep -->
+          <line x1="140" y1="110" x2="140" y2="22" stroke="#00d4ff" stroke-width="1.5" stroke-opacity=".5">
+            <animateTransform attributeName="transform" type="rotate" values="0 140 110; 360 140 110" dur="3s" repeatCount="indefinite"/>
+          </line>
+          <!-- Car top-down -->
+          <rect x="118" y="88" width="44" height="68" rx="10" fill="rgba(0,212,255,0.12)" stroke="#00d4ff" stroke-width="1" stroke-opacity=".5"/>
+          <rect x="124" y="94" width="32" height="24" rx="6" fill="rgba(0,212,255,0.15)"/>
+          <!-- Detection blips -->
+          <circle cx="80" cy="70" r="4" fill="#00f5c3" opacity=".8"><animate attributeName="opacity" values=".8;.2;.8" dur="1.8s" repeatCount="indefinite"/></circle>
+          <circle cx="200" cy="90" r="3" fill="#00d4ff" opacity=".7"><animate attributeName="opacity" values=".7;.2;.7" dur="2.2s" repeatCount="indefinite"/></circle>
+          <circle cx="170" cy="155" r="3.5" fill="#00f5c3" opacity=".6"><animate attributeName="opacity" values=".6;.1;.6" dur="1.5s" repeatCount="indefinite"/></circle>
+          <rect x="72" y="63" width="24" height="15" rx="3" fill="none" stroke="#00f5c3" stroke-width=".8" stroke-opacity=".5"/>
+          <rect x="192" y="83" width="22" height="14" rx="3" fill="none" stroke="#00d4ff" stroke-width=".8" stroke-opacity=".5"/>
+        </svg>
+      </div>
+      <div class="project-body">
+        <div class="project-label">Computer Vision · Deep Learning</div>
+        <h3>Autonomous Vehicle AI Systems</h3>
+        <p>Perception, path planning and sensor fusion systems for AV platforms — real-time LiDAR, camera and radar integration.</p>
+        <a href="#contact" class="arrow">Learn More →</a>
+      </div>
+    </div>
+
+    <!-- Full-width: AI Assistant + Facial Recognition -->
+    <div class="project-card full reveal">
+      <div class="project-visual vis-face">
+        <svg width="100%" height="100%" viewBox="0 0 320 280">
+          <defs>
+            <linearGradient id="scanLine" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0"/>
+              <stop offset="50%" style="stop-color:#00d4ff;stop-opacity:0.6"/>
+              <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0"/>
+            </linearGradient>
+          </defs>
+          <!-- Face outline -->
+          <ellipse cx="160" cy="130" rx="65" ry="80" fill="none" stroke="#00d4ff" stroke-width=".8" stroke-opacity=".4" stroke-dasharray="4 3"/>
+          <!-- Face landmarks -->
+          <circle cx="138" cy="112" r="3" fill="#00d4ff" opacity=".6"/>
+          <circle cx="182" cy="112" r="3" fill="#00d4ff" opacity=".6"/>
+          <circle cx="160" cy="140" r="2.5" fill="#00f5c3" opacity=".5"/>
+          <path d="M 145 158 Q 160 168 175 158" stroke="#00d4ff" stroke-width="1.5" fill="none" stroke-opacity=".5"/>
+          <!-- Corner brackets -->
+          <path d="M 90 50 L 90 70 M 90 50 L 110 50" stroke="#00d4ff" stroke-width="1.5" fill="none" stroke-opacity=".7"/>
+          <path d="M 230 50 L 230 70 M 230 50 L 210 50" stroke="#00d4ff" stroke-width="1.5" fill="none" stroke-opacity=".7"/>
+          <path d="M 90 210 L 90 190 M 90 210 L 110 210" stroke="#00d4ff" stroke-width="1.5" fill="none" stroke-opacity=".7"/>
+          <path d="M 230 210 L 230 190 M 230 210 L 210 210" stroke="#00d4ff" stroke-width="1.5" fill="none" stroke-opacity=".7"/>
+          <!-- Scan line -->
+          <rect x="90" y="0" width="140" height="30" fill="url(#scanLine)">
+            <animate attributeName="y" values="50;210;50" dur="2.5s" repeatCount="indefinite" calcMode="ease-in-out"/>
+          </rect>
+          <!-- Data readout -->
+          <text x="240" y="80" font-family="monospace" font-size="7" fill="#00d4ff" opacity=".5">ID: 99.2%</text>
+          <text x="240" y="92" font-family="monospace" font-size="7" fill="#00f5c3" opacity=".4">MATCH</text>
+          <text x="240" y="104" font-family="monospace" font-size="7" fill="#00d4ff" opacity=".3">AGE: 32</text>
+          <text x="10" y="80"  font-family="monospace" font-size="7" fill="#00d4ff" opacity=".5">XY: 0.84</text>
+          <text x="10" y="92"  font-family="monospace" font-size="7" fill="#00d4ff" opacity=".4">YAW: 2°</text>
+          <circle cx="160" cy="130" r="5" fill="#00d4ff" opacity=".3">
+            <animate attributeName="r" values="5;25;5" dur="2.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".3;0;.3" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+      <div class="project-body">
+        <div class="project-label">Computer Vision · Neural Networks</div>
+        <h3>Detection &amp; Facial Recognition Systems</h3>
+        <p>High-accuracy real-time identification pipelines for security, access control, and analytics — deployable on cloud infrastructure or on-premise edge hardware with sub-100ms latency.</p>
+        <p style="margin-top:.8rem">Covers multi-object detection, crowd analytics, age/gender estimation, emotion recognition, and liveness detection to counter spoofing attacks.</p>
+        <a href="#contact" class="arrow">Request a Demo →</a>
+      </div>
+    </div>
+
+    <!-- AI Assistant -->
+    <div class="project-card small reveal reveal-delay-1">
+      <div class="project-visual vis-assist">
+        <svg width="100%" height="100%" viewBox="0 0 280 220">
+          <circle cx="140" cy="90" r="50" fill="rgba(0,245,195,0.06)" stroke="#00f5c3" stroke-width=".8" stroke-opacity=".3"/>
+          <circle cx="140" cy="90" r="35" fill="rgba(0,245,195,0.08)" stroke="#00f5c3" stroke-width=".8" stroke-opacity=".4"/>
+          <text x="124" y="97" font-size="22" fill="white">🤖</text>
+          <!-- Wave lines -->
+          <path d="M 30 155 Q 50 145 70 155 Q 90 165 110 155" stroke="#00f5c3" stroke-width="1.2" fill="none" stroke-opacity=".4">
+            <animate attributeName="d" values="M 30 155 Q 50 145 70 155 Q 90 165 110 155;M 30 155 Q 50 165 70 155 Q 90 145 110 155;M 30 155 Q 50 145 70 155 Q 90 165 110 155" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <path d="M 80 175 Q 110 165 140 175 Q 170 185 200 175" stroke="#00d4ff" stroke-width="1.2" fill="none" stroke-opacity=".4">
+            <animate attributeName="d" values="M 80 175 Q 110 165 140 175 Q 170 185 200 175;M 80 175 Q 110 185 140 175 Q 170 165 200 175;M 80 175 Q 110 165 140 175 Q 170 185 200 175" dur="1.7s" repeatCount="indefinite"/>
+          </path>
+          <path d="M 170 155 Q 190 145 210 155 Q 230 165 250 155" stroke="#00f5c3" stroke-width="1.2" fill="none" stroke-opacity=".4">
+            <animate attributeName="d" values="M 170 155 Q 190 145 210 155 Q 230 165 250 155;M 170 155 Q 190 165 210 155 Q 230 145 250 155;M 170 155 Q 190 145 210 155 Q 230 165 250 155" dur="2.3s" repeatCount="indefinite"/>
+          </path>
+          <!-- Orbit dot -->
+          <circle cx="140" cy="40" r="5" fill="#00f5c3" opacity=".7">
+            <animateTransform attributeName="transform" type="rotate" values="0 140 90;360 140 90" dur="4s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+      <div class="project-body">
+        <div class="project-label">NLP · Voice AI</div>
+        <h3>AI Assistant Development</h3>
+        <p>Intelligent, voice-enabled enterprise assistants with task automation, calendar management, and deep system integrations.</p>
+        <a href="#contact" class="arrow">Learn More →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUR WORK -->
+<section class="ourwork-section" id="ourwork">
+  <div class="ourwork-header">
+    <div class="section-tag reveal">Our Work</div>
+    <h2 class="section-title reveal reveal-delay-1">Watch Our AI<br>Solutions in Action</h2>
+    <p class="section-sub reveal reveal-delay-2">Real projects built for real clients — explore our portfolio of deployed AI systems across computer vision, NLP, autonomous systems, and more.</p>
+
+    <div class="video-filter-bar reveal reveal-delay-3">
+      <button class="vf-btn active" onclick="filterVideos('all', this)">All Projects</button>
+      <button class="vf-btn" onclick="filterVideos('computer-vision', this)">Computer Vision</button>
+      <button class="vf-btn" onclick="filterVideos('nlp', this)">NLP &amp; Chatbots</button>
+      <button class="vf-btn" onclick="filterVideos('deep-learning', this)">Deep Learning</button>
+      <button class="vf-btn" onclick="filterVideos('autonomous', this)">Autonomous Systems</button>
+      <button class="vf-btn" onclick="filterVideos('detection', this)">Detection &amp; Recognition</button>
+    </div>
+  </div>
+
+  <div class="video-grid" id="videoGrid">
+
+    <!-- Video 1 -->
+    <div class="video-card reveal" data-category="computer-vision">
+      <div class="video-wrapper">
+        <div class="vid-placeholder" onclick="loadVideo(this, 'l0JNenifq2Y')">
+          <img src="https://img.youtube.com/vi/l0JNenifq2Y/hqdefault.jpg" alt="Project preview" loading="lazy"/>
+          <div class="vid-play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span class="vcategory">Computer Vision</span>
+        <h3>Project 1</h3>
+        <p>An AI-powered visual system developed for real-world commercial deployment.</p>
+        <a href="https://youtu.be/l0JNenifq2Y" target="_blank" rel="noopener" class="video-yt-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Video 2 -->
+    <div class="video-card reveal reveal-delay-1" data-category="detection">
+      <div class="video-wrapper">
+        <div class="vid-placeholder" onclick="loadVideo(this, 'bmVSjCLv8xQ')">
+          <img src="https://img.youtube.com/vi/bmVSjCLv8xQ/hqdefault.jpg" alt="Project preview" loading="lazy"/>
+          <div class="vid-play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span class="vcategory">Detection &amp; Recognition</span>
+        <h3>Project 2</h3>
+        <p>High-accuracy detection and recognition system engineered for commercial-scale use.</p>
+        <a href="https://youtu.be/bmVSjCLv8xQ" target="_blank" rel="noopener" class="video-yt-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Video 3 -->
+    <div class="video-card reveal reveal-delay-2" data-category="deep-learning">
+      <div class="video-wrapper">
+        <div class="vid-placeholder" onclick="loadVideo(this, 'vfV8nT0316A')">
+          <img src="https://img.youtube.com/vi/vfV8nT0316A/hqdefault.jpg" alt="Project preview" loading="lazy"/>
+          <div class="vid-play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span class="vcategory">Deep Learning</span>
+        <h3>Project 3</h3>
+        <p>Custom deep learning pipeline trained and optimized for production deployment.</p>
+        <a href="https://youtu.be/vfV8nT0316A" target="_blank" rel="noopener" class="video-yt-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Video 4 -->
+    <div class="video-card reveal" data-category="nlp">
+      <div class="video-wrapper">
+        <div class="vid-placeholder" onclick="loadVideo(this, '0c_aUU3gpEA')">
+          <img src="https://img.youtube.com/vi/0c_aUU3gpEA/hqdefault.jpg" alt="Project preview" loading="lazy"/>
+          <div class="vid-play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span class="vcategory">NLP &amp; Chatbots</span>
+        <h3>Project 4</h3>
+        <p>Conversational AI system with domain-specific knowledge and multi-turn reasoning.</p>
+        <a href="https://youtu.be/0c_aUU3gpEA" target="_blank" rel="noopener" class="video-yt-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Video 5 -->
+    <div class="video-card reveal reveal-delay-1" data-category="autonomous">
+      <div class="video-wrapper">
+        <div class="vid-placeholder" onclick="loadVideo(this, 'EeGn71KjPZA')">
+          <img src="https://img.youtube.com/vi/EeGn71KjPZA/hqdefault.jpg" alt="Project preview" loading="lazy"/>
+          <div class="vid-play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span class="vcategory">Autonomous Systems</span>
+        <h3>Project 5</h3>
+        <p>Autonomous AI system with real-time perception and intelligent decision-making.</p>
+        <a href="https://youtu.be/EeGn71KjPZA" target="_blank" rel="noopener" class="video-yt-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Video 6 -->
+    <div class="video-card reveal reveal-delay-2" data-category="computer-vision">
+      <div class="video-wrapper">
+        <div class="vid-placeholder" onclick="loadVideo(this, '_R9WF3rrZ3A')">
+          <img src="https://img.youtube.com/vi/_R9WF3rrZ3A/hqdefault.jpg" alt="Project preview" loading="lazy"/>
+          <div class="vid-play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span class="vcategory">Computer Vision</span>
+        <h3>Project 6</h3>
+        <p>Vision-based AI system enabling intelligent scene understanding and analysis.</p>
+        <a href="https://youtu.be/_R9WF3rrZ3A" target="_blank" rel="noopener" class="video-yt-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Video 7 -->
+    <div class="video-card reveal" data-category="detection">
+      <div class="video-wrapper">
+        <div class="vid-placeholder" onclick="loadVideo(this, '-sK8oOLphPs')">
+          <img src="https://img.youtube.com/vi/-sK8oOLphPs/hqdefault.jpg" alt="Project preview" loading="lazy"/>
+          <div class="vid-play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span class="vcategory">Detection &amp; Recognition</span>
+        <h3>Project 7</h3>
+        <p>Real-time object detection and recognition pipeline deployed at commercial scale.</p>
+        <a href="https://youtu.be/-sK8oOLphPs" target="_blank" rel="noopener" class="video-yt-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Video 8 -->
+    <div class="video-card reveal reveal-delay-1" data-category="deep-learning">
+      <div class="video-wrapper">
+        <div class="vid-placeholder" onclick="loadVideo(this, 'EjPjpf43mIQ')">
+          <img src="https://img.youtube.com/vi/EjPjpf43mIQ/hqdefault.jpg" alt="Project preview" loading="lazy"/>
+          <div class="vid-play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span class="vcategory">Deep Learning</span>
+        <h3>Project 8</h3>
+        <p>Neural architecture engineered and fine-tuned for high-performance inference.</p>
+        <a href="https://youtu.be/EjPjpf43mIQ" target="_blank" rel="noopener" class="video-yt-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Video 9 -->
+    <div class="video-card reveal reveal-delay-2" data-category="nlp">
+      <div class="video-wrapper">
+        <div class="vid-placeholder" onclick="loadVideo(this, 'XYeOpcB0A78')">
+          <img src="https://img.youtube.com/vi/XYeOpcB0A78/hqdefault.jpg" alt="Project preview" loading="lazy"/>
+          <div class="vid-play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span class="vcategory">NLP &amp; Chatbots</span>
+        <h3>Project 9</h3>
+        <p>Language model integration powering intelligent document processing and automation.</p>
+        <a href="https://youtu.be/XYeOpcB0A78" target="_blank" rel="noopener" class="video-yt-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Video 10 -->
+    <div class="video-card reveal" data-category="autonomous">
+      <div class="video-wrapper">
+        <div class="vid-placeholder" onclick="loadVideo(this, 'h5zKdI64K5A')">
+          <img src="https://img.youtube.com/vi/h5zKdI64K5A/hqdefault.jpg" alt="Project preview" loading="lazy"/>
+          <div class="vid-play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--cyan)"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span class="vcategory">Autonomous Systems</span>
+        <h3>Project 10</h3>
+        <p>End-to-end autonomous AI solution with sensor fusion and intelligent navigation.</p>
+        <a href="https://youtu.be/h5zKdI64K5A" target="_blank" rel="noopener" class="video-yt-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube ↗
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /video-grid -->
+
+  <p class="ourwork-note reveal">
+    Want to see more? <a href="https://www.youtube.com/@oceancodeai" target="_blank" rel="noopener">Visit our YouTube channel ↗</a>
+  </p>
+</section>
+
+<!-- WHY US -->
+<section class="why-section" id="why">
+  <div class="why-grid">
+    <div>
+      <div class="section-tag reveal">Why OceanCode AI</div>
+      <h2 class="section-title reveal reveal-delay-1">What Sets Us<br>Apart</h2>
+      <p class="section-sub reveal reveal-delay-2">We don't apply off-the-shelf models. We architect systems from the ground up — deeply aligned with your domain, data, and deployment environment.</p>
+
+      <ul class="why-list">
+        <li class="why-item reveal">
+          <div class="why-icon">🎯</div>
+          <div>
+            <h4>Domain-First Approach</h4>
+            <p>Every engagement starts with deep problem analysis before a single line of code is written. We understand your data, your constraints, and your definition of success.</p>
+          </div>
+        </li>
+        <li class="why-item reveal reveal-delay-1">
+          <div class="why-icon">🔬</div>
+          <div>
+            <h4>Research-Grade Engineering</h4>
+            <p>Our team combines academic rigor with production experience — delivering models that not only work in demos but thrive under real-world conditions at scale.</p>
+          </div>
+        </li>
+        <li class="why-item reveal reveal-delay-2">
+          <div class="why-icon">🌍</div>
+          <div>
+            <h4>Global Commercial Expertise</h4>
+            <p>We've delivered AI across logistics, retail, healthcare, automotive, and fintech — giving us cross-sector insight that informs every solution we build.</p>
+          </div>
+        </li>
+        <li class="why-item reveal reveal-delay-3">
+          <div class="why-icon">⚡</div>
+          <div>
+            <h4>Speed Without Compromise</h4>
+            <p>Structured sprints, transparent milestones, and CI/CD-native pipelines mean faster delivery cycles without sacrificing model quality or system reliability.</p>
+          </div>
+        </li>
+        <li class="why-item reveal reveal-delay-4">
+          <div class="why-icon">🔒</div>
+          <div>
+            <h4>Security &amp; Privacy by Design</h4>
+            <p>Data governance, model access controls, and on-premise deployment options are first-class requirements — not afterthoughts.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="why-visual">
+      <div class="orbit-ring"><div class="orbit-dot"></div></div>
+      <div class="orbit-ring"><div class="orbit-dot"></div></div>
+      <div class="why-orb">
+        <div class="why-orb-inner">
+          <div class="why-orb-core">🧠</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process-section" id="process">
+  <div class="section-tag reveal">How We Work</div>
+  <h2 class="section-title reveal reveal-delay-1">Our Engagement<br>Process</h2>
+
+  <div class="process-steps">
+    <div class="process-step reveal">
+      <div class="step-num">01</div>
+      <div class="step-dot">🔍</div>
+      <h3>Discovery &amp; Scoping</h3>
+      <p>We analyze your data landscape, business objectives, and technical constraints to define a precise, achievable AI roadmap.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-1">
+      <div class="step-num">02</div>
+      <div class="step-dot">⚙️</div>
+      <h3>Architecture &amp; Prototyping</h3>
+      <p>Our engineers design the system architecture and deliver a working prototype — validating core assumptions before full development begins.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-2">
+      <div class="step-num">03</div>
+      <div class="step-dot">🏗️</div>
+      <h3>Development &amp; Training</h3>
+      <p>Full model development, data pipeline engineering, training, evaluation, and iterative refinement against defined performance benchmarks.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-3">
+      <div class="step-num">04</div>
+      <div class="step-dot">🚀</div>
+      <h3>Deployment &amp; Integration</h3>
+      <p>Production deployment on your preferred infrastructure — cloud, on-premise, or edge — with full API integration into your existing systems.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-4">
+      <div class="step-num">05</div>
+      <div class="step-dot">📈</div>
+      <h3>Monitoring &amp; Growth</h3>
+      <p>Ongoing performance monitoring, model retraining schedules, and continuous improvement to ensure your AI solution stays ahead.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="section-tag reveal" style="display:block;text-align:center">Ready to Begin?</div>
+  <h2 class="section-title reveal reveal-delay-1">Let's Build Something<br>That <em style="color:var(--cyan);font-style:normal">Matters</em></h2>
+  <p class="section-sub reveal reveal-delay-2">Whether you have a detailed brief or just an idea — our team will help you shape an AI solution that delivers real business value.</p>
+  <div class="cta-actions reveal reveal-delay-3">
+    <a href="#contact" class="btn-primary">Start a Conversation →</a>
+    <a href="/cdn-cgi/l/email-protection#d8b0bdb4b4b798b7bbbdb9b6bbb7bcbdb9b1f6bbb7b5" class="btn-ghost"><span class="__cf_email__" data-cfemail="7d15181111123d121e181c131e1219181c14531e1210">[email&#160;protected]</span></a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="contact-grid">
+    <div class="contact-info reveal">
+      <div class="section-tag">Get In Touch</div>
+      <h2>Tell Us About<br>Your Project</h2>
+      <p>Our team responds within one business day. For complex engagements, we'll schedule a free 30-minute discovery call to understand your needs and propose a path forward.</p>
+
+      <div class="contact-detail">
+        <div class="contact-detail-icon">✉️</div>
+        <div><strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="18707d74747758777b7d79767b777c7d7971367b7775">[email&#160;protected]</a></strong><span>General &amp; Project Inquiries</span></div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">🌐</div>
+        <div><strong>www.oceancodeai.com</strong><span>Available Worldwide</span></div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">🕐</div>
+        <div><strong>Response within 24 hours</strong><span>Business Days (Mon–Fri)</span></div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-1">
+      <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" placeholder="Alex" required />
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" placeholder="Johnson" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Work Email</label>
+          <input type="email" placeholder="alex@company.com" required />
+        </div>
+        <div class="form-group">
+          <label>Company / Organization</label>
+          <input type="text" placeholder="Acme Corp" />
+        </div>
+        <div class="form-group">
+          <label>AI Domain of Interest</label>
+          <select>
+            <option value="">Select a discipline…</option>
+            <option>Computer Vision</option>
+            <option>Natural Language Processing</option>
+            <option>Deep Learning</option>
+            <option>Neural Networks</option>
+            <option>Chatbot / AI Assistant</option>
+            <option>Autonomous Systems</option>
+            <option>Facial Recognition</option>
+            <option>Multiple / Not Sure</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tell Us About Your Project</label>
+          <textarea placeholder="Briefly describe what you're looking to build, your timeline, and any relevant context…" required></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Send Message <span>→</span></button>
+      </form>
+      <div class="form-success" id="formSuccess">
+        <div style="font-size:2.5rem;margin-bottom:1rem">✅</div>
+        <h3>Message Received!</h3>
+        <p>Thank you for reaching out. A member of the OceanCode AI team will be in touch within one business day.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo" style="margin-bottom:.6rem;display:inline-flex">
+        <div class="nav-logo-mark">OC</div>
+        OceanCode AI
+      </a>
+      <p>Precision-engineered AI solutions for commercial enterprises worldwide. Computer Vision · NLP · Deep Learning · Neural Networks.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#services">Computer Vision</a></li>
+        <li><a href="#services">NLP Systems</a></li>
+        <li><a href="#services">Deep Learning</a></li>
+        <li><a href="#services">Neural Networks</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Solutions</h4>
+      <ul>
+        <li><a href="#projects">AI Chatbots</a></li>
+        <li><a href="#projects">AI Assistants</a></li>
+        <li><a href="#projects">Autonomous Vehicle AI</a></li>
+        <li><a href="#projects">Facial Recognition</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#why">Why OceanCode</a></li>
+        <li><a href="#process">Our Process</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="/cdn-cgi/l/email-protection#a5cdc0c9c9cae5cac6c0c4cbc6cac1c0c4cc8bc6cac8"><span class="__cf_email__" data-cfemail="365e535a5a5976595553575855595253575f1855595b">[email&#160;protected]</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 OceanCode AI. All rights reserved.</p>
+    <div class="socials">
+      <a href="#" class="social-btn" title="LinkedIn">in</a>
+      <a href="#" class="social-btn" title="Twitter/X">𝕏</a>
+      <a href="#" class="social-btn" title="GitHub">⌥</a>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ── Custom cursor
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  document.addEventListener('mousemove', e => {
+    dot.style.left  = ring.style.left  = e.clientX + 'px';
+    dot.style.top   = ring.style.top   = e.clientY + 'px';
+  });
+  document.querySelectorAll('a,button,input,textarea,select').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.style.cssText += 'width:52px;height:52px;border-color:rgba(0,212,255,.8)');
+    el.addEventListener('mouseleave', () => ring.style.cssText += 'width:36px;height:36px;border-color:rgba(0,212,255,.5)');
+  });
+
+  // ── Nav scroll
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ── Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => io.observe(el));
+
+  // ── Counter animation
+  function animateCount(el) {
+    const target = parseInt(el.dataset.count);
+    const suffix = el.textContent.includes('%') ? '%' : '+';
+    let start = 0;
+    const step = Math.ceil(target / 60);
+    const timer = setInterval(() => {
+      start = Math.min(start + step, target);
+      el.textContent = start + (target >= 50 ? '+' : target === 99 ? '%' : '+');
+      if (start >= target) clearInterval(timer);
+    }, 28);
+  }
+  const statsIo = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { document.querySelectorAll('[data-count]').forEach(animateCount); statsIo.disconnect(); } });
+  }, { threshold: 0.5 });
+  const heroStats = document.querySelector('.hero-stats');
+  if (heroStats) statsIo.observe(heroStats);
+
+  // ── Canvas particle field
+  const canvas = document.getElementById('hero-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+  resize(); window.addEventListener('resize', resize);
+  class Particle {
+    constructor() { this.reset(); this.y = Math.random() * H; }
+    reset() { this.x = Math.random() * W; this.y = H + 10; this.vx = (Math.random()-.5)*.3; this.vy = -(Math.random()*.4+.1); this.r = Math.random()*1.5+.3; this.life = 1; this.decay = Math.random()*.003+.001; this.color = Math.random() > .5 ? '0,212,255' : '0,245,195'; }
+    update() { this.x += this.vx; this.y += this.vy; this.life -= this.decay; if (this.life <= 0) this.reset(); }
+    draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle = `rgba(${this.color},${this.life*.4})`; ctx.fill(); }
+  }
+  for (let i = 0; i < 120; i++) particles.push(new Particle());
+  function frame() {
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    // draw faint connecting lines
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i+1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d  = Math.sqrt(dx*dx+dy*dy);
+        if (d < 80) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.strokeStyle = `rgba(0,212,255,${(1-d/80)*.06})`;
+          ctx.lineWidth = .5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+
+  // ── Mobile menu
+
+  // ── Mobile menu
+  function openMobile()  { document.getElementById('mobile-menu').classList.add('open'); }
+  function closeMobile() { document.getElementById('mobile-menu').classList.remove('open'); }
+  document.getElementById('mobile-close').addEventListener('click', closeMobile);
+
+  // ── Video lazy load (click to play)
+  function loadVideo(placeholder, videoId) {
+    const wrapper = placeholder.parentElement;
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.title = 'OceanCode AI Project Video';
+    wrapper.appendChild(iframe);
+    placeholder.classList.add('loaded');
+    setTimeout(() => placeholder.remove(), 400);
+  }
+
+  // ── Video category filter
+  function filterVideos(category, btn) {
+    document.querySelectorAll('.vf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.video-card').forEach(card => {
+      if (category === 'all' || card.dataset.category === category) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  }
+
+  // ── Form submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+  }
+</script>
+</body>
+</html>
